@@ -33,5 +33,6 @@ for k in range(12):
 
 2. ```KIC_Final.py```를 통해 자동감리 모델을 구현
   이때 각 output_*에 따라 모델이 구현될수도 있고 안될 수도 있음
+
   에러 원인 1. Ransac시 기울기가 무한대로 발산할 수 있음 2. output_*.csv 이 dab을 제외한 insulation이 아닐 수 있음
 
