@@ -10,11 +10,13 @@ def parse_polygon_annotation(annotation_line, img_width, img_height):
     points = [(int(x * img_width), int(y * img_height)) for x, y in zip(parts[1::2], parts[2::2])]
     return class_id, points
 
-
 if __name__ == "__main__":
     # 이미지와 어노테이션 파일 경로 설정
-    image_path = "./donut/images/brooke-lark-5BbB3WPi128-unsplash.jpg"
-    annotation_path = "./donut/labels/brooke-lark-5BbB3WPi128-unsplash.txt"
+    # image_path = "./donut/images/brooke-lark-5BbB3WPi128-unsplash.jpg"
+    # annotation_path = "./donut/labels/brooke-lark-5BbB3WPi128-unsplash.txt"
+
+    image_path = "./EIFS_Doughnut_2.v1i.coco-segmentation/train/IMG_2764_JPG.rf.7cb84dfcf5bc8b5e19aff7d61e31a1ba.jpg"
+    annotation_path = "./EIFS_Doughnut_2.v1i.coco-segmentation/train/annoation_YOLO.txt/0.txt"
 
     # 이미지 불러오기
     image = cv2.imread(image_path)
@@ -27,7 +29,12 @@ if __name__ == "__main__":
             class_id, polygon_points = parse_polygon_annotation(line, img_width, img_height)
 
             # 이미지에 바운딩 박스 그리기
-            cv2.polylines(image, [np.array(polygon_points)], isClosed=True, color=(0, 255, 0), thickness=2)
+            if class_id == 0:
+                cv2.polylines(image, [np.array(polygon_points)], isClosed=True, color=(0, 255, 0), thickness=2)
+            # elif class_id == 1:
+            #     cv2.polylines(image, [np.array(polygon_points)], isClosed=True, color=(0, 0, 255), thickness=2)
+            elif class_id == 2:
+                cv2.polylines(image, [np.array(polygon_points)], isClosed=True, color=(255, 0, 0), thickness=2)
 
     # 이미지 표시
     plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
