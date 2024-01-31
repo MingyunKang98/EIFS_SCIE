@@ -36,3 +36,16 @@ for k in range(12):
 
   에러 원인 1. Ransac시 기울기가 무한대로 발산할 수 있음 2. output_*.csv 이 dab을 제외한 insulation이 아닐 수 있음
 
+
+---
+
+## 연구일지
+
+### 240131
+1. Roboflow json annotation -> _annotations.coco.json 파일 생성
+
+2. JsonFormatter.py -> 정렬된 json 파일 생성
+
+3. json_txt_converter.py -> json annotation을 YOLO.txt파일로 변환 파일 생성
+
+
