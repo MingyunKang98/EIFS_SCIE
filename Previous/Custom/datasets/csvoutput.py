@@ -1,4 +1,4 @@
-dir = "1.txt"
+dir = "2.txt"
 for k in range(12):
     coord = [[], [], [], [], [], [], []]
     idx = -1

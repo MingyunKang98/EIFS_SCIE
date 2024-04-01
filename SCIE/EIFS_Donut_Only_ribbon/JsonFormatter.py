@@ -46,5 +46,5 @@ if __name__ == "__main__":
     # 사용 예시
     input_file = "train/_annotations.coco.json"
     formatted_json = format_and_save_json(input_file)
-    output_directory = "./train/annotations_YOLO"
+    output_directory = "./train/annotations_YOLO_only_ribbon"
     convert_coco_to_yolo_and_match_filenames(formatted_json, output_directory)

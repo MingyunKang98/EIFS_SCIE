@@ -186,6 +186,6 @@ def EIFS_automation(src, coord):
     plt.text(50,50,"ratio : {}%".format(ratio), color="white", fontweight="semibold")
     plt.imshow(img_to_coord(imgOutput))
     plt.show()
-src = "./datasets/1.jpg"
+src = "./datasets/2.jpg"
 coord = np.loadtxt("./datasets/output_6.csv", delimiter=",")
 EIFS_automation(src, coord)
