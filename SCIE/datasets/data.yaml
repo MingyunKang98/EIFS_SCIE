@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['dab', 'ribbon']
+
+roboflow:
+  workspace: conict-kw2sd
+  project: eifs_doughnut_3
+  version: 2
+  license: MIT
+  url: https://universe.roboflow.com/conict-kw2sd/eifs_doughnut_3/dataset/2

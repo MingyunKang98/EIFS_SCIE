@@ -42,7 +42,7 @@ import os
 
 if __name__ == '__main__':
     os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-    model = YOLO("./yolov8s-seg.pt")
+    model = YOLO("./runs/segment/train7/weights/best.pt")
     model.train(data='./datasets/data.yaml', epochs=50, patience=300)
     # predict = model.predict("./20230509_114835.jpg", save=True, save_txt=True, conf=0.2)
 
