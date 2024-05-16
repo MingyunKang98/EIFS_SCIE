@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
+from sklearn.cluster import KMeans
+
 
 def distance(x1, y1, x2, y2):
     return np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
@@ -58,12 +61,72 @@ def line_intersection(line1, line2, x_min, x_max, y_min, y_max):
     else:
         return -12345, -12345
 
-if __name__ == "__main__":
-    whole = np.load('whole_save.npy')
+def coord_sort(x):
+    x = np.array(x)
+    k = x[:,0]
+    s = k.argsort()
+    centers_sorted = x[s]
+    for i in range(len(centers_sorted)//2):
+        b = centers_sorted[2*i:2*(i+1),:]
+        k = b[:,1]
+        s = k.argsort()
+        centers_sorted[2*i:2*(i+1), :] = b[s]
+    return centers_sorted
 
-    xy = np.where(whole == 1)
-    x_data = xy[0]
-    y_data = xy[1]
+def homography(img, points, width = 600, height = 300):
+    pts1 = np.float32(coord_sort(points))
+    pts2 = np.float32([[0, 0], [width, 0],[0,height], [width, height]])
+    matrix = cv2.getPerspectiveTransform(pts1, pts2)
+    # img = img_to_coord(img)
+    img = cv2.warpPerspective(img, matrix, (width, height))
+    return img
+
+def cluster(point_data, n_cluster=8):
+    '''
+    <input>
+    point_data: 중심점을 구할 포인트 집합 ( np.array([[x1,y1], [x2,y2], [x3,y3]....]]) )
+    n_cluster: 클러스터링할 그룹의 수
+
+    <output>
+    centers: 중심점 집합 ( np.array([[x1,y1], [x2,y2], [x3,y3]....]]) )
+    '''
+    model = KMeans(n_clusters=n_cluster)
+    model.fit(point_data)
+    predict = model.predict(point_data)
+    colors = plt.cm.Spectral(np.linspace(0, 1, len(set(predict))))
+    k_means_labels = model.labels_
+    k_means_cluster_centers = model.cluster_centers_
+    for k, col in zip(range(n_cluster), colors):
+        my_members = (k_means_labels == k)
+
+        # 중심 정의
+        cluster_center = k_means_cluster_centers[k]
+
+    centers = np.array(k_means_cluster_centers, dtype=int)
+    return centers
+
+
+def draw_dab_distances(centers):
+    centers_x = centers[:,0]
+    centers_y = centers[:,1]
+    distances_vert = []
+    distances_horiz = []
+    for k in range(0, 6 ,2):
+        distances_vert.append(round((centers[k]).distance((centers[k+1]))*2,2))
+        plt.plot((centers_x[k], centers_x[k+1]),(centers_y[k],centers_y[k+1]), marker="o",linestyle=":")
+        plt.text((centers_x[k]+centers_x[k+1])/2 ,(centers_y[k]+centers_y[k+1])/2, distances_vert[-1], color="white")
+    for k in range(0, 4):
+        distances_horiz.append(round((centers[k]).distance((centers[k+2]))*2,2))
+        plt.plot((centers_x[k], centers_x[k+2]),(centers_y[k],centers_y[k+2]), marker="s",linestyle="--")
+        plt.text((centers_x[k]+centers_x[k+2])/2 ,(centers_y[k]+centers_y[k+2])/2, distances_horiz[-1],color="white")
+
+if __name__ == "__main__":
+    xy = np.load('ribbon_point.npy')
+
+    img_dir = "./IMG_4245_JPG.rf.63460a44ffb7591e4ab7aaa7483d11e6.jpg"
+    img = cv2.imread(img_dir)
+    x_data = xy[:, 0]
+    y_data = xy[:, 1]
     x_tmp = x_data.copy()
     y_tmp = y_data.copy()
     ransac_line = []
@@ -94,6 +157,31 @@ if __name__ == "__main__":
 
     intersection_points = np.array(intersection_points)
     print(intersection_points)
-    plt.scatter(x_data, y_data)
+
+    whole = np.load('whole_save.npy')
+    whole[whole == 1] = 255
+    plt.imshow(whole)
+
+
+    # plt.scatter(x_data, y_data)
     plt.scatter(intersection_points[:,0], intersection_points[:,1])
+
+    plt.show()
+
+    whole_homo = homography(whole, intersection_points)
+    plt.imshow(whole_homo)
+    plt.show()
+
+    plt.imshow(homography(img, intersection_points))
+    plt.show()
+
+    xy = np.where(whole_homo == 255)
+    x_data = xy[0]
+    y_data = xy[1]
+
+    xys = np.stack((x_data, y_data), axis=1)
+
+    cluster_dab = cluster(xys)
+    plt.scatter(cluster_dab[:,0], cluster_dab[:,1])
+    plt.imshow(homography(img, intersection_points))
     plt.show()
